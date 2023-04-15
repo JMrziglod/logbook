@@ -1,0 +1,26 @@
+<html>
+    <head>        
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
+    </head>
+    <body>
+        <h1>RaBid Logbook</h1>
+        {% block content %}
+        <script>
+            var widgets = {{widgets | tojson }};
+            function edit(row, col) {
+                document.getElementById("widget_code").textContent = widgets[row][col].code;
+            }
+        </script>
+            
+        {% for row in widgets %}
+        <div style="display: flex;">
+            {% for widget in row %}
+                <div id="widget_{{widget.row}}x{{widget.col}}">{{widget.html | safe }}</div>
+                <button onclick="edit({{widget.row}}, {{widget.col}});">edit</button>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <textarea id="widget_code" cols="30" rows="10"></textarea>
+        {% endblock %}
+    </body>
+</html>
