@@ -12,31 +12,18 @@
                 document.getElementById("widget_code").value = widgets[row][col].code;
                 current_widget = [row, col];
             }
-            async function save_and_render_widget(){
+            function save_and_render_widget(){
                 let row = current_widget[0];
                 let col = current_widget[1];
                 let code = document.getElementById("widget_code").value;
                 widgets[row][col].code = code;
-
-                const response = await fetch(
-                    `widget/edit/${row}/${col}`, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({'code': code})
-                    });
-                const widget = await response.json();
-                console.log(widget.html);
-                document.getElementById(`widget_${row}_${col}`).innerHTML = widget.html;
             }
         </script>
             
         {% for row in widgets %}
         <div style="display: flex;">
             {% for widget in row %}
-                <div id="widget_{{widget.row}}_{{widget.col}}">{{widget.html | safe }}</div>
+                <div id="widget_{{widget.row}}x{{widget.col}}">{{widget.html | safe }}</div>
                 <button onclick="edit_widget_code({{widget.row}}, {{widget.col}});">edit</button>
             {% endfor %}
         </div>

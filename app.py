@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import plotly
 import plotly.express as px
 
@@ -27,16 +27,26 @@ def index():
     for r, row in enumerate(widgets):
         row_as_string = []
         for c, code in enumerate(row):
-            locals = {}
-            exec(code, globals(), locals)
-            row_as_string.append({
-                    "row": r,
-                    "col": c,
-                    "code": code,
-                    "html": locals["html"]
-                })
+            row_as_string.append(render_widget(r, c, code))
         widgets_as_strings.append(row_as_string)
     return render_template("dashboard.html", widgets=widgets_as_strings)
+
+def render_widget(row, col, code):
+    l = {}
+    print(code)
+    exec(code, globals(), l)
+    return {
+                    "row": row,
+                    "col": col,
+                    "code": code,
+                    "html": l["html"]
+                }
+
+@app.route("/widget/edit/<int:row>/<int:col>", methods=['GET', "POST"])
+def edit_widget(row, col):
+    content = request.json
+    widgets[row][col] = content['code']
+    return render_widget(row, col, content['code'])
 
 def run_file(filename):
     code = Path(filename).read_text()
