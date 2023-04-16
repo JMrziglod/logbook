@@ -34,7 +34,10 @@ def index():
 def render_widget(row, col, code):
     l = {}
     print(code)
-    exec(code, globals(), l)
+    try:
+        exec(code, globals(), l)
+    except Exception as err: 
+        l["html"] = f"&#9888;<b>ERROR:</b> {err}"
     return {
                     "row": row,
                     "col": col,
