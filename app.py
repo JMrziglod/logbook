@@ -39,7 +39,7 @@ def render_widget(row, col, code):
                     "row": row,
                     "col": col,
                     "code": code,
-                    "html": l["html"]
+                    "html": l["html"],
                 }
 
 @app.route("/widget/edit/<int:row>/<int:col>", methods=['GET', "POST"])

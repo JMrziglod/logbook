@@ -1,38 +1,31 @@
-<html>
-    <head>        
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Plotly JS-->
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
+        <!--Ace Editor JS-->
+        <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.16.0/src-min-noconflict/ace.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ace-builds@1.16.0/css/ace.min.css">
+        <style type="text/css" media="screen">
+            #widget_editor {
+                display: none;
+                top: 50%;
+                left: 0px;
+            }
+            #widget_code { 
+                position: relative;
+                top: 0px;
+                right: 0px;
+                bottom: 0;
+                left: 0;
+                width:80%;
+                height:100px;
+            }
+        </style>
     </head>
     <body>
         <h1>RaBid Logbook</h1>
-        {% block content %}
-        <script>
-            var widgets = {{widgets | tojson }};
-            var current_widget = null;
-            function edit_widget_code(row, col) {
-                document.getElementById("widget_code").value = widgets[row][col].code;
-                current_widget = [row, col];
-            }
-            async function save_and_render_widget(){
-                let row = current_widget[0];
-                let col = current_widget[1];
-                let code = document.getElementById("widget_code").value;
-                widgets[row][col].code = code;
-
-                const response = await fetch(
-                    `widget/edit/${row}/${col}`, {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({'code': code})
-                    });
-                const widget = await response.json();
-                console.log(widget.html);
-                document.getElementById(`widget_${row}_${col}`).innerHTML = widget.html;
-            }
-        </script>
-            
+        {% block content %}    
         {% for row in widgets %}
         <div style="display: flex;">
             {% for widget in row %}
@@ -41,8 +34,46 @@
             {% endfor %}
         </div>
         {% endfor %}
-        <textarea id="widget_code" cols="30" rows="10"></textarea>
-        <button onclick="save_and_render_widget();">Save</button>
+        <div id="widget_editor">
+            <div id="widget_code"></div>
+            <button onclick="save_and_render_widget();">Save</button>
+        </div>
+        <script>
+            var widgets = {{widgets | tojson }};
+            var current_widget = null;
+            function edit_widget_code(row, col) {
+                editor.setValue(widgets[row][col].code);
+                current_widget = [row, col];
+                document.getElementById("widget_editor").style.display = "block";
+            }
+            async function save_and_render_widget(){
+                let row = current_widget[0];
+                let col = current_widget[1];
+                let code = editor.getValue();
+                widgets[row][col].code = code;
+
+                fetch(
+                    `widget/edit/${row}/${col}`, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({'code': code})
+                    }).then(response => {
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        onsole.error(error);
+                    });
+
+                document.getElementById("widget_editor").style.display = "none";
+            }
+            var editor = ace.edit("widget_code");
+            editor.setTheme("ace/theme/monokai");
+            editor.session.setMode("ace/mode/python");
+            editor.resize()
+        </script>
         {% endblock %}
     </body>
 </html>
