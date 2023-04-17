@@ -10,15 +10,13 @@ app = Flask(__name__)
 table = {}
 widgets = [
     [
-    """
-fig = px.scatter(table["iris"], x="sepal_width", y="sepal_length", color="species")
+"""fig = px.line(table["bidstream_daily"], x="time", y="bids")
 html = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
-    """,
-    """
-fig = px.scatter(table["iris"], x="sepal_width", y="sepal_length", color="petal_length")
+""",
+"""fig = px.line(table["impstream_daily"], x="time", y="avg_cpm")
 html = plotly.offline.plot(fig, include_plotlyjs=False, output_type='div')
-    """,
-    ]
+""",
+    ],
 ]
 
 @app.route("/")
