@@ -7,7 +7,6 @@ import plotly.express as px
 
 app = Flask(__name__)
 
-table = {}
 widgets = [
     [
 """fig = px.line(table["bidstream_daily"], x="time", y="bids")
