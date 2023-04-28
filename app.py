@@ -34,6 +34,11 @@ def render_widget(row, col, code):
     print(code)
     try:
         exec(code, globals(), l)
+        if "html" not in l:
+            if "fig" not in l:
+                l["html"] = f"&#9888;<b>ERROR:</b> You need either a html or fig variable."
+            else:
+                l["html"] = plotly.offline.plot(l["fig"], include_plotlyjs=False, output_type='div')
     except Exception as err: 
         l["html"] = f"&#9888;<b>ERROR:</b> {err}"
     return {
